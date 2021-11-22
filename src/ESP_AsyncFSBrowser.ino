@@ -103,10 +103,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 
 
-const char* ssid = "ESPNet";
-const char* password = "";
-/*const char * ssid = "TP-Link_7632";
-const char * password = "97261261";*/
+/*const char* ssid = "ESPNet";
+const char* password = "";*/
+const char * ssid = "TP-Link_7632";
+const char * password = "97261261";
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
@@ -265,13 +265,16 @@ void loop(){
   timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
   //Serial.print("HOUR: ");
   //Serial.println(timeStamp);
-  events.send(dayStamp.c_str());
+  //events.send(dayStamp.c_str());
 
   StaticJsonDocument<200> doc;
   //doc["sensor"] = "gps";
   //doc["time"] = 1351824120;
-  doc["time"] = dayStamp.c_str();   
+  doc["time"] = dayStamp.c_str();
+  //serializeJson(doc, jsondata);
   serializeJson(doc, jsondata);
   events.send(jsondata.c_str());
+  doc.clear();
+
   delay(1000);
 }

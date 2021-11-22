@@ -51,7 +51,7 @@
             background-color: red;
             color: blue;
         }
-
+        
         #input_el {
             width: 98%;
             background-color: rgba(0, 0, 0, 0);
@@ -147,6 +147,30 @@
             startSocket();
             startEvents();
         }
+
+        //let divId = document.getElementById("json")
+        //divId.innerHTML = divId.innerHTML + jsondata;
+        //doc["time"] = dayStamp.c_str();
+        //serializeJson(doc, jsondata);
+        //$('#time > p').append(doc, jsondata);
+        //$('#time > p').append(jsondata);
+
+        /*let divId = document.getElementById("#time");
+        let data = data.append(doc, jsondata);
+        divId.innerHTML = time.append(data);*/
+        //document.getElementById("time").innerHTML.append(jsondata)
+
+        /*function showJsonData() {
+            $document.getElementById("time").innerHTML.append(jsondata)
+        }*/
+
+        document.getElementById("time").innerHTML.append(jsondata);
+
+        /*$(document).ready(function() {
+            $("#time").on(function() {
+                $("p").append(doc, jsondata);
+            })
+        });*/
     </script>
 </head>
 
@@ -157,8 +181,12 @@
         $<input type="text" value="" id="input_el">
     </div>
     <div id="input_div_2">
-        $<input type="text" value="">
+        <!--<p id="time" onload="showJsonData()"></p>-->
+        <input type="text" id="time">
     </div>
 </body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </html>
