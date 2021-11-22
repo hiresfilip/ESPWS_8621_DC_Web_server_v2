@@ -16,7 +16,7 @@
 #include <ESP8266WiFi.h>
 #include <WiFiUdp.h>
 #include <string>
-
+#include <ArduinoJson.h>
 WiFiUDP ntpUDP;
 //NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
 NTPClient timeClient(ntpUDP, "cz.pool.ntp.org", 3600, 60000);
@@ -26,8 +26,9 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 
-String actualTime = timeClient.getFormattedTime();
-
+String formattedDate;
+String dayStamp;
+String timeStamp;
 
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
   if(type == WS_EVT_CONNECT){
@@ -102,10 +103,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 
 
-/*const char* ssid = "ESPNet";
-const char* password = "";*/
-const char * ssid = "TP-Link_7632";
-const char * password = "97261261";
+const char* ssid = "ESPNet";
+const char* password = "";
+/*const char * ssid = "TP-Link_7632";
+const char * password = "97261261";*/
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
@@ -123,6 +124,7 @@ void setup(){
     WiFi.begin(ssid, password);
   }
   timeClient.begin();
+  timeClient.setTimeOffset(3600);
 
   //Send OTA events to the browser
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
@@ -239,14 +241,37 @@ void setup(){
 
 
 void loop(){
+  String jsondata;
   ArduinoOTA.handle();
   ws.cleanupClients();
-  timeClient.update();
+  while(!timeClient.update()) {
+    timeClient.forceUpdate();
+  }
   //Serial.println(timeClient.getFormattedTime());
-  static char temp[128];
+  //static char temp[128];
   //events.send("Update Start", "ota");
-  //events.send(timeClient.getFormattedTime());
-  events.send(actualTime.c_str());
-  
+  //actualTime=timeClient.getFormattedTime();
+  //events.send(foobar2);
+  //events.send(actualTime);
+  formattedDate = timeClient.getFormattedTime();
+  //Serial.println(formattedDate);
+
+  // Extract date
+  int splitT = formattedDate.indexOf("T");
+  dayStamp = formattedDate.substring(0, splitT);
+  //Serial.print("DATE: ");
+  //Serial.println(dayStamp);
+  // Extract time
+  timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
+  //Serial.print("HOUR: ");
+  //Serial.println(timeStamp);
+  events.send(dayStamp.c_str());
+
+  StaticJsonDocument<200> doc;
+  //doc["sensor"] = "gps";
+  //doc["time"] = 1351824120;
+  doc["time"] = dayStamp.c_str();   
+  serializeJson(doc, jsondata);
+  events.send(jsondata.c_str());
   delay(1000);
 }
