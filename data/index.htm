@@ -21,6 +21,10 @@
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <title>WebSocketTester</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
     <style type="text/css" media="screen">
         body {
             margin: 0;
@@ -44,14 +48,6 @@
             padding-left: 4px;
         }
         
-        #input_div_2 {
-            margin: 0;
-            padding: 0;
-            padding-left: 4px;
-            background-color: red;
-            color: blue;
-        }
-        
         #input_el {
             width: 98%;
             background-color: rgba(0, 0, 0, 0);
@@ -60,6 +56,9 @@
         
         #input_el:focus {
             outline: none;
+        }
+        #dtptime{
+            color: white;
         }
     </style>
     <script type="text/javascript">
@@ -136,7 +135,10 @@
                 }
             };
             es.onmessage = function(e) {
-                addMessage("Event: " + e.data);
+                //addMessage("Event: " + e.data);
+                const obj = JSON.parse(e.data);
+                $('#dtptime').empty().append('<br>' + $('<div/>').text('Actual Time: ' + obj.time).html());
+
             };
             es.addEventListener('ota', function(e) {
                 addMessage("Event[ota]: " + e.data);
@@ -147,46 +149,16 @@
             startSocket();
             startEvents();
         }
-
-        //let divId = document.getElementById("json")
-        //divId.innerHTML = divId.innerHTML + jsondata;
-        //doc["time"] = dayStamp.c_str();
-        //serializeJson(doc, jsondata);
-        //$('#time > p').append(doc, jsondata);
-        //$('#time > p').append(jsondata);
-
-        /*let divId = document.getElementById("#time");
-        let data = data.append(doc, jsondata);
-        divId.innerHTML = time.append(data);*/
-        //document.getElementById("time").innerHTML.append(jsondata)
-
-        /*function showJsonData() {
-            $document.getElementById("time").innerHTML.append(jsondata)
-        }*/
-
-        document.getElementById("time").innerHTML.append(jsondata);
-
-        /*$(document).ready(function() {
-            $("#time").on(function() {
-                $("p").append(doc, jsondata);
-            })
-        });*/
     </script>
 </head>
 
 <body id="body" onload="onBodyLoad()">
-    <!--<h1>Ahoj</h1>-->
     <pre id="dbg"></pre>
     <div id="input_div">
-        $<input type="text" value="" id="input_el">
+       $<input type="text" value="" id="input_el">
     </div>
-    <div id="input_div_2">
-        <!--<p id="time" onload="showJsonData()"></p>-->
-        <input type="text" id="time">
+    <div id="dtptime">
     </div>
 </body>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
 </html>
