@@ -15,21 +15,58 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 -->
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
-    <title>WebSocketTester</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>ESPWS 8621 DC</title>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <!--
+        https://www.cssscript.com/sleek-html5-javascript-color-picker-iro-js/
+        https://github.com/jaames/iro.js
+        <script src="iro.js/demo/demo.js"></script>
+    -->
+
+    <!-- Styles CSS -->
     <style type="text/css" media="screen">
+        /* Styles for classes */
+        
         body {
             margin: 0;
             padding: 0;
-            background-color: black;
+            background-color: #282828;
+        }
+        
+        main {
+            margin: 2em;
+            padding: 2em;
+            background-color: #AAA;
+        }
+        
+        h1 {
+            background-color: blue;
+            color: white;
+            text-align: center;
+            font-family: Arial, Helvetica, sans-serif;
+            padding: auto;
+            margin: auto;
+            padding-top: 2em;
+            padding-bottom: 2em;
         }
         
         #dbg,
@@ -57,9 +94,85 @@
         #input_el:focus {
             outline: none;
         }
-        #dtptime{
-            color: white;
+        
+        #dtptime {
+            color: blue;
+            animation: changeColor 5s infinite;
         }
+        
+        @keyframes changeColor {
+            50% {
+                color: red;
+            }
+        }
+        
+        @keyframes changeBorder {
+            50% {
+                border-color: blue;
+            }
+        }
+        
+        .borderAnimation {
+            border-radius: 10px;
+            border: solid 1px red;
+            border-left: blue 10px solid;
+            border-right: blue 10px solid;
+            border-color: red;
+            animation: changeBorder 5s infinite;
+            text-align: center;
+        }
+        
+        .borderNoAnimation {
+            border-radius: 10px;
+            border: solid 1px blue;
+            border-left: blue 10px solid;
+            border-right: blue 10px solid;
+            padding: 1em;
+        }
+        
+        .indentation {
+            padding: 1em;
+            margin: 1em;
+        }
+        /* Sliders */
+        
+        .slidecontainer {
+            width: 100%;
+        }
+        
+        .slider {
+            /*-webkit-appearance: none;*/
+            width: 100%;
+            height: 15px;
+            border-radius: 5px;
+            border: solid 2px black;
+            background: blue;
+            /*outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;*/
+        }
+        /*.slider:hover {
+            opacity: 1;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }*/
     </style>
     <script type="text/javascript">
         var ws = null;
@@ -93,10 +206,10 @@
             ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
             ws.binaryType = "arraybuffer";
             ws.onopen = function(e) {
-                addMessage("Connected");
+                //addMessage("Connected");
             };
             ws.onclose = function(e) {
-                addMessage("Disconnected");
+                //addMessage("Disconnected");
             };
             ws.onerror = function(e) {
                 console.log("ws error", e);
@@ -111,9 +224,9 @@
                         msg += String.fromCharCode(bytes[i]);
                     }
                 } else {
-                    msg = "TXT:" + e.data;
+                    //msg = "TXT:" + e.data;
                 }
-                addMessage(msg);
+                //addMessage(msg);
             };
             ge("input_el").onkeydown = function(e) {
                 stb();
@@ -127,21 +240,22 @@
         function startEvents() {
             var es = new EventSource('/events');
             es.onopen = function(e) {
-                addMessage("Events Opened");
+                //addMessage("Events Opened");
             };
             es.onerror = function(e) {
                 if (e.target.readyState != EventSource.OPEN) {
-                    addMessage("Events Closed");
+                    //addMessage("Events Closed");
                 }
             };
             es.onmessage = function(e) {
                 //addMessage("Event: " + e.data);
                 const obj = JSON.parse(e.data);
-                $('#dtptime').empty().append('<br>' + $('<div/>').text('Actual Time: ' + obj.time).html());
+                $('#dtptime').empty().append($('<p/>').text('Actual Time: ' + obj.time).html());
+                $('#demo').empty().append('<br>' + $('<p/>').text(e.output).html());
 
             };
             es.addEventListener('ota', function(e) {
-                addMessage("Event[ota]: " + e.data);
+                //addMessage("Event[ota]: " + e.data);
             }, false);
         }
 
@@ -149,16 +263,42 @@
             startSocket();
             startEvents();
         }
+
+        let slider = document.getElementById("myRange");
+        let output = document.getElementById("demo");
+        output.innerHTML = slider.value;
+
+        slider.oninput = function() {
+            output.innerHTML = this.value;
+        }
+
+        let colorWheel = new iro.ColorPicker("#colorWheelDemo", {
+            // options here
+        });
     </script>
 </head>
 
 <body id="body" onload="onBodyLoad()">
+    <h1>ESPWS 8621 DC</h1>
     <pre id="dbg"></pre>
     <div id="input_div">
-       $<input type="text" value="" id="input_el">
+        <!--$--><input type="text" value="" id="input_el">
     </div>
-    <div id="dtptime">
-    </div>
+    <main>
+        <div class="borderAnimation">
+            <p id="dtptime"></p>
+        </div>
+        <div class="indentation"></div>
+        <div class="borderNoAnimation">
+            <div class="slidecontainer">
+                <p>Brightness</p>
+                <input type="range" min="1" max="100" value="100" class="slider" id="myRange">
+                <p>Value: <span id="demo"></span></p>
+            </div>
+        </div>
+        <div class="indentation"></div>
+        <!-- JS Colors -->
+    </main>
 </body>
 
 </html>

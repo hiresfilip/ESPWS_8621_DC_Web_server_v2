@@ -103,10 +103,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 
 
-const char* ssid = "ESPNet";
-const char* password = "";
-/*const char * ssid = "TP-Link_7632";
-const char * password = "97261261";*/
+/*const char* ssid = "ESPNet";
+const char* password = "";*/
+const char * ssid = "TP-Link_7632";
+const char * password = "97261261";
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
