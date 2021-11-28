@@ -27,7 +27,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <title>ESPWS 8621 DC</title>
+    <title>ESPWS 8621 WS DC</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -69,6 +69,22 @@
             padding-bottom: 2em;
         }
         
+        footer {
+            background-color: blue;
+            border-radius: 10px;
+            border: solid 1px red;
+            /*border-left: blue 10px solid;
+            border-right: blue 10px solid;
+            border-top: blue 10px solid;
+            border-bottom: blue 10px solid;*/
+            border-color: red;
+            text-align: center;
+            font-size: 24px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+            color: white;
+            padding-top: 1em;
+        }
+        
         #dbg,
         #input_div,
         #input_el {
@@ -98,6 +114,7 @@
         #dtptime {
             color: blue;
             animation: changeColor 5s infinite;
+            padding-top: 1em;
         }
         
         @keyframes changeColor {
@@ -279,7 +296,7 @@
 </head>
 
 <body id="body" onload="onBodyLoad()">
-    <h1>ESPWS 8621 DC</h1>
+    <h1>ESPWS 8621 WS DC</h1>
     <pre id="dbg"></pre>
     <div id="input_div">
         <!--$--><input type="text" value="" id="input_el">
@@ -299,6 +316,9 @@
         <div class="indentation"></div>
         <!-- JS Colors -->
     </main>
+    <footer>
+        <p>&copy; ESPWS 8621 WS DC, All Rights Reserved</p>
+    </footer>
 </body>
 
 </html>
