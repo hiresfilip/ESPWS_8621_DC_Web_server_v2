@@ -28,10 +28,11 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>ESPWS 8621 WS DC</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
@@ -268,7 +269,6 @@
                 //addMessage("Event: " + e.data);
                 const obj = JSON.parse(e.data);
                 $('#dtptime').empty().append($('<p/>').text('Actual Time: ' + obj.time).html());
-                $('#demo').empty().append('<br>' + $('<p/>').text(e.output).html());
 
             };
             es.addEventListener('ota', function(e) {
@@ -280,18 +280,15 @@
             startSocket();
             startEvents();
         }
-
+    </script>
+    <script type="text/javascript">
         let slider = document.getElementById("myRange");
         let output = document.getElementById("demo");
-        output.innerHTML = slider.value;
 
         slider.oninput = function() {
             output.innerHTML = this.value;
+            ge("demo").value = this.value;
         }
-
-        let colorWheel = new iro.ColorPicker("#colorWheelDemo", {
-            // options here
-        });
     </script>
 </head>
 
@@ -309,15 +306,14 @@
         <div class="borderNoAnimation">
             <div class="slidecontainer">
                 <p>Brightness</p>
-                <input type="range" min="1" max="100" value="100" class="slider" id="myRange">
+                <input type="range" min="1" max="100" value="" class="slider" id="myRange">
                 <p>Value: <span id="demo"></span></p>
             </div>
         </div>
         <div class="indentation"></div>
-        <!-- JS Colors -->
     </main>
     <footer>
-        <p>&copy; ESPWS 8621 WS DC, All Rights Reserved</p>
+        <p>&copy; ESPWS 8621 WS DC</p>
     </footer>
 </body>
 

@@ -110,6 +110,7 @@ const char * password = "97261261";
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
+const char* PARAM_MESSAGE = "message";
 
 void setup(){
   Serial.begin(115200);
@@ -166,6 +167,16 @@ void setup(){
         String message;
         request->send(200, "text/plain", String(timeClient.getFormattedTime()));
     });
+    server.on("/data", HTTP_POST, [](AsyncWebServerRequest *request){
+        String message;
+        if (request->hasParam(PARAM_MESSAGE, true)) {
+            message = request->getParam(PARAM_MESSAGE, true)->value();
+        } else {
+            message = "No message sent";
+        }
+        request->send(200, "text/plain", "Hello, POST: " + String(message));
+    });
+
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
   });
