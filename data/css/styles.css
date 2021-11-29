@@ -1,3 +1,148 @@
 body {
-    background-color: #292a2d;
+    margin: 0;
+    padding: 0;
+    background-color: #282828;
 }
+
+main {
+    margin: 2em;
+    padding: 2em;
+    background-color: #AAA;
+}
+
+h1 {
+    background-color: blue;
+    color: white;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: auto;
+    margin: auto;
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+footer {
+    background-color: blue;
+    border-radius: 10px;
+    border: solid 1px red;
+    /*border-left: blue 10px solid;
+    border-right: blue 10px solid;
+    border-top: blue 10px solid;
+    border-bottom: blue 10px solid;*/
+    border-color: red;
+    text-align: center;
+    font-size: 24px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    color: white;
+    padding-top: 1em;
+}
+
+#dbg,
+#input_div,
+#input_el {
+    font-family: monaco;
+    font-size: 12px;
+    line-height: 13px;
+    color: #AAA;
+}
+
+#dbg,
+#input_div {
+    margin: 0;
+    padding: 0;
+    padding-left: 4px;
+}
+
+#input_el {
+    width: 98%;
+    background-color: rgba(0, 0, 0, 0);
+    border: 0px;
+}
+
+#input_el:focus {
+    outline: none;
+}
+
+#dtptime {
+    color: blue;
+    animation: changeColor 5s infinite;
+    padding-top: 1em;
+}
+
+@keyframes changeColor {
+    50% {
+        color: red;
+    }
+}
+
+@keyframes changeBorder {
+    50% {
+        border-color: blue;
+    }
+}
+
+.borderAnimation {
+    border-radius: 10px;
+    border: solid 1px red;
+    border-left: blue 10px solid;
+    border-right: blue 10px solid;
+    border-color: red;
+    animation: changeBorder 5s infinite;
+    text-align: center;
+}
+
+.borderNoAnimation {
+    border-radius: 10px;
+    border: solid 1px blue;
+    border-left: blue 10px solid;
+    border-right: blue 10px solid;
+    padding: 1em;
+}
+
+.indentation {
+    padding: 1em;
+    margin: 1em;
+}
+
+
+/* Sliders */
+
+.slidecontainer {
+    width: 100%;
+}
+
+.slider {
+    /*-webkit-appearance: none;*/
+    width: 100%;
+    height: 15px;
+    border-radius: 5px;
+    border: solid 2px black;
+    background: blue;
+    /*outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;*/
+}
+
+
+/*.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
+}*/
