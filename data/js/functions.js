@@ -91,6 +91,7 @@ let output = document.getElementById("demo");
 
 slider.addEventListener('change', function() {
     output.innerHTML = this.value;
+    ws.send(ge("demo").value);
     ge("demo").value = this.value;
-    console.log("Hello world!");
+    console.log("Value of slider: " + ge("demo").value);
 });

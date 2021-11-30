@@ -42,7 +42,7 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
   } else if(type == WS_EVT_PONG){
     Serial.printf("ws[%s][%u] pong[%u]: %s\n", server->url(), client->id(), len, (len)?(char*)data:"");
   } else if(type == WS_EVT_DATA){
-    Serial.printf("mam data");
+    Serial.printf("mam data: ");
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     String msg = "";
     if(info->final && info->index == 0 && info->len == len){
@@ -104,10 +104,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 
 
-const char* ssid = "ESPNet";
-const char* password = "";
-/*const char * ssid = "TP-Link_7632";
-const char * password = "97261261";*/
+/*const char* ssid = "ESPNet";
+const char* password = "";*/
+const char * ssid = "TP-Link_7632";
+const char * password = "97261261";
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
