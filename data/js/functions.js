@@ -92,4 +92,5 @@ let output = document.getElementById("demo");
 slider.addEventListener('change', function() {
     output.innerHTML = this.value;
     ge("demo").value = this.value;
+    console.log("Hello world!");
 });
