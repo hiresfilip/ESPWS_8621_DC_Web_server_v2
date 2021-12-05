@@ -86,12 +86,50 @@ function onBodyLoad() {
     startEvents();
 }
 
-let slider = document.getElementById("myRange");
-let output = document.getElementById("demo");
+/*let slider = document.getElementById("myRange");
+let output = document.getElementById("demo");*/
 
-slider.addEventListener('change', function() {
-    output.innerHTML = this.value;
-    ws.send(ge("demo").value);
-    ge("demo").value = this.value;
-    console.log("Value of slider: " + ge("demo").value);
-});
+/* Brightness of LED */
+let brightness = document.getElementById("brightness");
+let outputBrightness = document.getElementById("outputBrightness")
+
+brightness.addEventListener('change', function() {
+    outputBrightness.innerHTML = this.value;
+    ws.send(ge("outputBrightness").value);
+    ge("outputBrightness").value = this.value;
+    console.log("Value of brightness: " + ge("outputBrightness").value);
+})
+
+/* Color RED */
+let red = document.getElementById("red");
+let outputRed = document.getElementById("outputRed")
+
+red.addEventListener('change', function() {
+    outputRed.innerHTML = this.value;
+    ws.send(ge("outputRed").value);
+    ge("outputRed").value = this.value;
+    console.log("Value of RED: " + ge("outputRed").value);
+})
+
+/* Color Green */
+let green = document.getElementById("green");
+let outputGreen = document.getElementById("outputGreen")
+
+green.addEventListener('change', function() {
+    outputGreen.innerHTML = this.value;
+    ws.send(ge("outputGreen").value);
+    ge("outputGreen").value = this.value;
+    console.log("Value of Green: " + ge("outputGreen").value)
+})
+
+let blue = document.getElementById("blue");
+let outputBlue = document.getElementById("outputBlue")
+
+blue.addEventListener('change', function() {
+    outputBlue.innerHTML = this.value;
+    ws.send(ge("outputBlue").value);
+    ge("outputBlue").value = this.value;
+    console.log("Value of Blue: " + ge("outputBlue").value);
+})
+
+;

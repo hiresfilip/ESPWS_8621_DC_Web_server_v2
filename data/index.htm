@@ -50,11 +50,34 @@
         <div class="borderNoAnimation">
             <div class="slidecontainer">
                 <p>Brightness</p>
-                <input type="range" min="1" max="100" value="100" class="slider" id="myRange">
-                <p>Value: <span id="demo"></span></p>
+                <input type="range" min="1" max="100" value="100" class="sliderBrightness" id="brightness">
+                <p>Value: <span id="outputBrightness"></span></p>
             </div>
         </div>
         <div class="indentation"></div>
+        <div class="borderNoAnimation">
+            <div class="slidecontainer">
+                <!--<p>RGB Colors settings</p>
+                <div>
+                    <div class="indentation"></div>-->
+                <p class="red">Red</p>
+                <input type="range" min="1" max="255" value="255" class="sliderRed" id="red">
+                <p class="red">Value: <span id="outputRed"></span></p>
+            </div>
+            <div>
+                <div class="indentation"></div>
+                <p class="green">Green</p>
+                <input type="range" min="1" max="255" value="255" class="sliderGreen" id="green">
+                <p class="green">Value: <span id="outputGreen"></span></p>
+            </div>
+            <div>
+                <div class="indentation"></div>
+                <p class="blue">Blue</p>
+                <input type="range" min="1" max="255" value="255" class="sliderBlue" id="blue">
+                <p class="blue">Value: <span id="outputBlue"></span></p>
+            </div>
+        </div>
+        </div>
     </main>
     <footer>
         <p>&copy; ESPWS 8621 WS DC</p>
