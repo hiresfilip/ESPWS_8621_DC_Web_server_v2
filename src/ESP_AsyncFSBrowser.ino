@@ -1,3 +1,4 @@
+/* Knihovna pro OTU - uploadování přes wifi */
 #include <ArduinoOTA.h>
 #ifdef ESP32
 #include <FS.h>
@@ -6,30 +7,45 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #elif defined(ESP8266)
+/* Knihovna zajišťuje komunikaci wifi a ESP */
 #include <ESP8266WiFi.h>
+/* Knihovna, jejiž cílem je umožnit bezproblémové síťové prostředí pro ESP8266 */
 #include <ESPAsyncTCP.h>
+/* Knihovna, zajišťuje získání IP pro ESP */
 #include <ESP8266mDNS.h>
 #endif
+/* Knihovna pro AsyncWebServer, tedy synchronizace Webu a ESP */
 #include <ESPAsyncWebServer.h>
+/* Knihovna, která umožňuje poslání souborového systému (file system - FS) */
 #include <SPIFFSEditor.h>
+/* Knihovna, která umožňuje stahování aktuálního času */
 #include <NTPClient.h>
+/* Knihovna zajišťuje komunikaci wifi a ESP */
 #include <ESP8266WiFi.h>
+/*  */
 #include <WiFiUdp.h>
+/* Knihovna z jazyka C, umožňuje převést data na jednoduchý řetězec (string), typický pro jazyk C */
 #include <string>
+/* knihovna, která se stará o GET a POST pro technologii JSON mezi ESP a stránku index.htm */
 #include <ArduinoJson.h>
+
+/* Určení časové zóny */
 WiFiUDP ntpUDP;
 //NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
+/* Časová zóna je Česká Republika */
 NTPClient timeClient(ntpUDP, "cz.pool.ntp.org", 3600, 60000);
 
-// SKETCH BEGIN
+/* Proměnné týkající se AsyncWebServeru */
 AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 
+/* Proměnné týkající se DTPClientu */
 String formattedDate;
 String dayStamp;
 String timeStamp;
 
+/* Funkce, která zaznamenává eventy (události), které ESP dostane od serveru a vypíše do serial monitoru */
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
   if(type == WS_EVT_CONNECT){
     Serial.printf("ws[%s][%u] connect\n", server->url(), client->id());
@@ -103,16 +119,17 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
   }
 }
 
-
-/*const char* ssid = "ESPNet";
-const char* password = "";*/
-const char * ssid = "TP-Link_7632";
-const char * password = "97261261";
+/* Definování proměnných k připojení na internet a k aplikaci*/
+const char* ssid = "ESPNet";
+const char* password = "";
+/*const char * ssid = "TP-Link_7632";
+const char * password = "97261261";*/
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
 const char* PARAM_MESSAGE = "message";
 
+/* Funkce, která nastaví wifi připojení */
 void setup(){
   Serial.begin(115200);
   Serial.setDebugOutput(true);
@@ -125,10 +142,11 @@ void setup(){
     delay(1000);
     WiFi.begin(ssid, password);
   }
+  /* Funkce, která aktivuje timeClienta z knihovny NTP Client */
   timeClient.begin();
   timeClient.setTimeOffset(3600);
 
-  //Send OTA events to the browser
+  /* Funkce, která pošle OTA events (údálosti) prohlížeči */
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
   ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -147,18 +165,21 @@ void setup(){
   ArduinoOTA.begin();
 
   MDNS.addService("http","tcp",80);
-
+ 
+ /* Aktivace souborového systému pro ukládání na ESP čip */
   SPIFFS.begin();
 
+/* Vyvolání funkce ws (WebSocket), která naslouchá na jendotlivé eventy (události) */
   ws.onEvent(onWsEvent);
   server.addHandler(&ws);
 
+/* Při připojení na aplikaci, klient zašle zkušební zprávu */
   events.onConnect([](AsyncEventSourceClient *client){
     client->send("hello!",NULL,millis(),1000);
   });
   server.addHandler(&events);
   
-
+/* Routing*/
 #ifdef ESP32
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
 #elif defined(ESP8266)
@@ -183,7 +204,7 @@ void setup(){
   });
   
  
-
+/* Routování, metody POST, GET, PUT, UNKNOW, atd. včetně chyby 404 - stránka nenalezena */
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request){
@@ -232,6 +253,7 @@ void setup(){
 
     request->send(404);
   });
+  /* Metoda pro uploadování souboru na server */
   server.onFileUpload([](AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final){
     if(!index)
       Serial.printf("UploadStart: %s\n", filename.c_str());
@@ -239,6 +261,7 @@ void setup(){
     if(final)
       Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
   });
+  /* Metoda pro příjem informací ze stránky index.htm do ESP */
   server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
     if(!index)
       Serial.printf("BodyStart: %u\n", total);
@@ -251,40 +274,32 @@ void setup(){
 
 //const char * actualTime = timeClient.getFormattedTime().c_str();
 
-
+/* Funkce, smyčka, která se neustále opakuje v intervalu 1 sekundy -> delay(1000), tedy 1 000 ms -> 1 sekunda */
 void loop(){
+  /* Vytvoření proměnné pro data uložená v JSON formátu */
   String jsondata;
+  /* OTA začne naslouchat */
   ArduinoOTA.handle();
+  /* Vyčištění klientů pro naslouchání WebSocketu */
   ws.cleanupClients();
+  /* Pokud se timeClient neupdatuje, tak bude silou updatován */
   while(!timeClient.update()) {
     timeClient.forceUpdate();
   }
-  //Serial.println(timeClient.getFormattedTime());
-  //static char temp[128];
-  //events.send("Update Start", "ota");
-  //actualTime=timeClient.getFormattedTime();
-  //events.send(foobar2);
-  //events.send(actualTime);
-  formattedDate = timeClient.getFormattedTime();
-  //Serial.println(formattedDate);
 
-  // Extract date
+  /* Do proměnné formattedDate se uloží formátovaný čas z NTPClienta */
+  formattedDate = timeClient.getFormattedTime();
+  /* Vytažení (extrakce) dat v podobě HH:MM:SS*/
   int splitT = formattedDate.indexOf("T");
   dayStamp = formattedDate.substring(0, splitT);
-  //Serial.print("DATE: ");
-  //Serial.println(dayStamp);
-  // Extract time
   timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
-  //Serial.print("HOUR: ");
-  //Serial.println(timeStamp);
-  //events.send(dayStamp.c_str());
 
+  /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.htm */
   StaticJsonDocument<200> doc;
-  //doc["sensor"] = "gps";
-  //doc["time"] = 1351824120;
   doc["time"] = dayStamp.c_str();
   //serializeJson(doc, jsondata);
   serializeJson(doc, jsondata);
+  /* Poslání JSON dat skrze WebSocket */
   events.send(jsondata.c_str());
   doc.clear();
 

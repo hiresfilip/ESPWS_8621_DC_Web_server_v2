@@ -181,6 +181,7 @@ footer {
     width: 25px;
     height: 25px;
     border-radius: 50%;
+    border: dashed 2px white;
     background: gray;
     cursor: pointer;
 }

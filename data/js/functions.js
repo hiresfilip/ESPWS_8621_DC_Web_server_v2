@@ -1,5 +1,6 @@
 var ws = null;
 
+/* Funkce pro naslouchání z indexu skrze ID */
 function ge(s) {
     return document.getElementById(s);
 }
@@ -18,6 +19,8 @@ function sendBlob(str) {
     ws.send(buf);
 }
 
+/* Funkce, která se stará o poslání zpráv na HTML stránku */
+
 function addMessage(m) {
     var msg = ce("div");
     msg.innerText = m;
@@ -25,15 +28,19 @@ function addMessage(m) {
     stb();
 }
 
+/* Funkce, která se stará o komunikace technologií WebSocket */
 function startSocket() {
     ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
     ws.binaryType = "arraybuffer";
+    /* Když je připojen WebSocket */
     ws.onopen = function(e) {
         //addMessage("Connected");
     };
+    /* Když WebSocket je nepřipojen */
     ws.onclose = function(e) {
         //addMessage("Disconnected");
     };
+    /* V případě erroru WebSocket zašle zprávu */
     ws.onerror = function(e) {
         console.log("ws error", e);
         addMessage("Error");
