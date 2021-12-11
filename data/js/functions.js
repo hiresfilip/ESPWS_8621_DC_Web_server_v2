@@ -107,8 +107,57 @@ brightness.addEventListener('change', function() {
     console.log("Value of brightness: " + ge("outputBrightness").value);
 })
 
+/* ####################################################################################################################### */
+$(document).ready(function() {
+    //////###############################################//////
+    //** code for color picker **//
+    $.fn.roundSlider.prototype.updateColor = function() {
+        var angle = this._handle1.angle - 90;
+        var hsl_color = "hsl(" + angle + ", 100%, 50%)";
+        var rgb_color = this._colorBox.css({
+            background: hsl_color
+        }).css("background-color");
+        this._colorValue.html(rgb_color);
+        this._raise("colorChange", {
+            hsl: hsl_color,
+            rgb: rgb_color
+        });
+        console.log(rgb_color);
+    }
+    var _fn1 = $.fn.roundSlider.prototype._setValue;
+    $.fn.roundSlider.prototype._setValue = function() {
+        if (!this._colorBox) {
+            this._colorBox = $("<div class='color_box'></div>");
+            this._colorValue = $("<div class='color_val'></div>");
+            this.innerBlock.append(this._colorBox, this._colorValue);
+        }
+        _fn1.apply(this, arguments);
+        this._raiseEvent("change");
+    }
+    var _fn2 = $.fn.roundSlider.prototype._raiseEvent;
+    $.fn.roundSlider.prototype._raiseEvent = function(e) {
+            this.updateColor();
+            return _fn2.call(this, e);
+        }
+        //////###############################################//////
+
+    $("#slider").roundSlider({
+        radius: 110,
+        width: 25,
+        handleSize: "30,6",
+        value: 25,
+        showTooltip: false,
+
+        colorChange: function(e) {
+            //e.hsl returns the hsl format color
+            //e.rgb returns the rgb format color
+            $("#title").css("color", e.rgb);
+        }
+    })
+});
+
 /* Color RED */
-let red = document.getElementById("red");
+/*let red = document.getElementById("red");
 let outputRed = document.getElementById("outputRed")
 
 red.addEventListener('change', function() {
@@ -116,10 +165,10 @@ red.addEventListener('change', function() {
     ws.send(ge("outputRed").value);
     ge("outputRed").value = this.value;
     console.log("Value of RED: " + ge("outputRed").value);
-})
+})*/
 
 /* Color Green */
-let green = document.getElementById("green");
+/*let green = document.getElementById("green");
 let outputGreen = document.getElementById("outputGreen")
 
 green.addEventListener('change', function() {
@@ -138,5 +187,49 @@ blue.addEventListener('change', function() {
     ge("outputBlue").value = this.value;
     console.log("Value of Blue: " + ge("outputBlue").value);
 })
+*/
 
-;
+
+//////###############################################//////
+//** code for color picker **//
+/*$(document).ready(function() {
+    console.log("jQuery");
+});*/
+/*
+$.fn.roundSlider.prototype.updateColor = function () {
+    var angle = this._handle1.angle - 90;
+    var hsl_color = "hsl(" + angle + ", 100%, 50%)";
+    var rgb_color = this._colorBox.css({ background: hsl_color }).css("background-color");
+    this._colorValue.html(rgb_color);
+    this._raise("colorChange", { hsl: hsl_color, rgb: rgb_color });
+  }
+  var _fn1 = $.fn.roundSlider.prototype._setValue;
+  $.fn.roundSlider.prototype._setValue = function () {
+    if (!this._colorBox) {
+      this._colorBox = $("<div class='color_box'></div>");
+      this._colorValue = $("<div class='color_val'></div>");
+      this.innerBlock.append(this._colorBox, this._colorValue);
+    }
+    _fn1.apply(this, arguments);
+    this._raiseEvent("change");
+  }
+  var _fn2 = $.fn.roundSlider.prototype._raiseEvent;
+  $.fn.roundSlider.prototype._raiseEvent = function (e) {
+    this.updateColor();
+    return _fn2.call(this, e);
+  }
+  //////###############################################//////
+  
+  $("#slider").roundSlider({
+    radius: 110,
+    width: 25,
+    handleSize: "30,6",
+    value: 25,
+    showTooltip: false,
+  
+    colorChange: function (e) {
+      // e.hsl returns the hsl format color
+      // e.rgb returns the rgb format color
+      $("#title").css("color", e.rgb);
+    }
+  })*/

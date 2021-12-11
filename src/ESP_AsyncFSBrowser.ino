@@ -120,10 +120,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 
 /* Definování proměnných k připojení na internet a k aplikaci*/
-const char* ssid = "ESPNet";
-const char* password = "";
-/*const char * ssid = "TP-Link_7632";
-const char * password = "97261261";*/
+/*const char* ssid = "ESPNet";
+const char* password = "";*/
+const char * ssid = "TP-Link_7632";
+const char * password = "97261261";
 const char * hostName = "esp-async";
 const char* http_username = "admin";
 const char* http_password = "admin";
@@ -179,7 +179,7 @@ void setup(){
   });
   server.addHandler(&events);
   
-/* Routing*/
+/* Routing v části API*/
 #ifdef ESP32
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
 #elif defined(ESP8266)
@@ -204,7 +204,7 @@ void setup(){
   });
   
  
-/* Routování, metody POST, GET, PUT, UNKNOW, atd. včetně chyby 404 - stránka nenalezena */
+/* Routování, metody POST, GET, PUT, UNKNOW, atd. včetně chyby 404 - stránka nenalezena, WebSocket technologie */
   server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
 
   server.onNotFound([](AsyncWebServerRequest *request){

@@ -200,7 +200,8 @@ footer {
 
 /* Red sliders styles*/
 
-.sliderRed {
+
+/*.sliderRed {
     -webkit-appearance: none;
     width: 100%;
     height: 15px;
@@ -235,6 +236,7 @@ footer {
     background: red;
     cursor: pointer;
 }
+*/
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -242,7 +244,8 @@ footer {
 
 /* Green slider styles */
 
-.sliderGreen {
+
+/*.sliderGreen {
     -webkit-appearance: none;
     width: 100%;
     height: 15px;
@@ -277,6 +280,7 @@ footer {
     background: green;
     cursor: pointer;
 }
+*/
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -284,7 +288,8 @@ footer {
 
 /*  Blue slider styles*/
 
-.sliderBlue {
+
+/*.sliderBlue {
     -webkit-appearance: none;
     width: 100%;
     height: 15px;
@@ -318,4 +323,58 @@ footer {
     border-radius: 50%;
     background: blue;
     cursor: pointer;
+}*/
+
+.rs-path-color {
+    background: url("http://roundsliderui.com/assets/images/conical.png");
+    background-size: 100%;
+}
+
+.rs-block .rs-inner {
+    padding: 10%;
+}
+
+.color_box {
+    height: 50%;
+    width: 100%;
+    border-radius: 1000px 1000px 0 0;
+}
+
+.color_val {
+    text-align: center;
+    font-family: verdana;
+    border: 1px solid #aaa;
+    border-radius: 100px;
+    padding: 4px;
+    font-size: 11px;
+    margin-top: 8%;
+}
+
+.rs-bar .rs-seperator.rs-border {
+    display: none;
+}
+
+h1 span {
+    font-size: 0.6em;
+}
+
+.types {
+    display: inline-block;
+    padding: 10px 30px;
+    border: 1px dotted;
+    margin-right: 20px;
+    overflow: hidden;
+}
+
+.container {
+    height: 180px;
+    width: 400px;
+}
+
+.container>div {
+    float: left;
+}
+
+.control {
+    margin-right: 70px;
 }
