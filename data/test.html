@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>RoundSlider - A sample demo</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/round-slider/dist/roundslider.min.js"></script>
+    <style>
+        .rs-path-color {
+            background: url("http://roundsliderui.com/assets/images/conical.png");
+            background-size: 100%;
+        }
+    </style>
+</head>
+
+<body style="padding: 10px 0 0 20px; font-family: monospace;">
+
+    <h1>roundSlider v
+        <script>
+            document.write($.fn.roundSlider.prototype.version)
+        </script>
+        <span>- A free jQuery plugin</span>
+    </h1>
+    <h2><a target="_blank" href="http://roundsliderui.com/">roundSlider</a> as <b id="title">Color picker </b></h2> <br/>
+
+    <div id="slider"></div>
+
+    <br/><br/>
+    <div>Selected color (rgb): <b id="cval1"></b></div>
+    <div>Selected color (hsl): <b id="cval2"></b></div>
+    <div class="types">
+        <h3>Slider Types</h3>
+        <div class="container">
+            <div class="control">
+                <div id="type"></div>
+            </div>
+            <div class="options">
+                <select id="Select1" onchange="sliderTypeChanged(this)" style="float: left;">
+                    <option>default</option>
+                    <option>min-range</option>
+                    <option>range</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="types">
+        <h3>Circle Shapes</h3>
+        <div class="container">
+            <div class="control">
+                <div id="shape"></div>
+            </div>
+            <div class="options">
+                <select id="type1" onchange="sliderShapeChanged(this)" style="float: left;">
+                    <option>full</option>
+                    <option>quarter-top-left</option>
+                    <option>quarter-top-right</option>
+                    <option>quarter-bottom-right</option>
+                    <option>quarter-bottom-left</option>
+                    <option>half-top</option>
+                    <option>half-bottom</option>
+                    <option>half-left</option>
+                    <option>half-right</option>
+                    <option>pie</option>
+                    <option>custom-half</option>
+                    <option>custom-quarter</option>
+                    <option>custom-qu</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <br /><br /><br />
+    <p>
+        For more details please check the <a target="_blank" href="http://roundsliderui.com/demos.html">Demos</a> and
+        <a target="_blank" href="http://roundsliderui.com/document.html">Documentation</a> page.
+    </p>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            //////###############################################//////
+            //** code for color picker **//
+            $.fn.roundSlider.prototype.updateColor = function() {
+                var angle = this._handle1.angle - 90;
+                var hsl_color = "hsl(" + angle + ", 100%, 50%)";
+                var rgb_color = this._hiddenField.css({
+                    background: hsl_color
+                }).css("background-color");
+                this._raise("colorChange", {
+                    hsl: hsl_color,
+                    rgb: rgb_color
+                });
+            }
+            var _fn1 = $.fn.roundSlider.prototype._setValue;
+            $.fn.roundSlider.prototype._setValue = function() {
+                _fn1.apply(this, arguments);
+                this._raiseEvent("change");
+            }
+            var _fn2 = $.fn.roundSlider.prototype._raiseEvent;
+            $.fn.roundSlider.prototype._raiseEvent = function(e) {
+                    this.updateColor();
+                    return _fn2.call(this, e);
+                }
+                //////###############################################//////
+
+            $("#slider").roundSlider({
+                radius: 110,
+                width: 25,
+                handleSize: "30,8",
+                value: 25,
+                showTooltip: false,
+                circleShape: "pie",
+
+                colorChange: function(e) {
+                    // e.hsl returns the hsl format color
+                    // e.rgb returns the rgb format color
+                    $("#title").css("color", e.rgb);
+                    $("#cval1").html(e.rgb);
+                    $("#cval2").html(e.hsl);
+                    console.log(e.rgb);
+                }
+            });
+            $("#type").roundSlider({
+                svgMode: true,
+                value: 45,
+            });
+            $("#shape").roundSlider({
+                svgMode: true,
+                value: 60,
+                sliderType: "min-range"
+            });
+        });
+
+        function sliderTypeChanged(e) {
+            $("#type").roundSlider({
+                sliderType: e.value
+            });
+        }
+
+        function sliderShapeChanged(e) {
+            var options = {
+                circleShape: e.value
+            };
+            if (e.value == "pie") options["startAngle"] = 0;
+            else if (e.value == "custom-quarter" || e.value == "custom-half") options["startAngle"] = 45;
+            $("#shape").roundSlider(options);
+        }
+    </script>
+
+    <style>
+        h1 span {
+            font-size: 0.6em;
+        }
+        
+        .types {
+            display: inline-block;
+            padding: 10px 30px;
+            border: 1px dotted;
+            margin-right: 20px;
+            overflow: hidden;
+        }
+        
+        .container {
+            height: 180px;
+            width: 400px;
+        }
+        
+        .container>div {
+            float: left;
+        }
+        
+        .control {
+            margin-right: 70px;
+        }
+    </style>
+</body>
+
+</html>

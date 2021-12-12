@@ -1,5 +1,9 @@
-/* Knihovna pro OTU - uploadování přes wifi */
+/* Knihovna pro technologii OTA = over the air - uploadování přes wifi */
 #include <ArduinoOTA.h>
+
+/* Podmínka určuje, jestli je připojen čip ESP32, když ne, tak určí ESP8266
+(samozřejmě za přepokladu, že tento projekt se nahrává do čipu ESP)*/
+
 #ifdef ESP32
 #include <FS.h>
 #include <SPIFFS.h>
@@ -7,36 +11,49 @@
 #include <WiFi.h>
 #include <AsyncTCP.h>
 #elif defined(ESP8266)
+
 /* Knihovna zajišťuje komunikaci wifi a ESP */
 #include <ESP8266WiFi.h>
+
 /* Knihovna, jejiž cílem je umožnit bezproblémové síťové prostředí pro ESP8266 */
 #include <ESPAsyncTCP.h>
+
 /* Knihovna, zajišťuje získání IP pro ESP */
 #include <ESP8266mDNS.h>
 #endif
+
 /* Knihovna pro AsyncWebServer, tedy synchronizace Webu a ESP */
 #include <ESPAsyncWebServer.h>
+
 /* Knihovna, která umožňuje poslání souborového systému (file system - FS) */
 #include <SPIFFSEditor.h>
+
 /* Knihovna, která umožňuje stahování aktuálního času */
 #include <NTPClient.h>
+
 /* Knihovna zajišťuje komunikaci wifi a ESP */
 #include <ESP8266WiFi.h>
-/*  */
+
+/* Knihovna pro přenos UDP paketů */
 #include <WiFiUdp.h>
+
 /* Knihovna z jazyka C, umožňuje převést data na jednoduchý řetězec (string), typický pro jazyk C */
 #include <string>
-/* knihovna, která se stará o GET a POST pro technologii JSON mezi ESP a stránku index.htm */
+
+/* knihovna, která se stará o GET a POST pro technologii JSON mezi ESP a stránku index.html */
 #include <ArduinoJson.h>
 
 /* Určení časové zóny */
 WiFiUDP ntpUDP;
 //NTPClient timeClient(ntpUDP, "europe.pool.ntp.org", 3600, 60000);
+
 /* Časová zóna je Česká Republika */
 NTPClient timeClient(ntpUDP, "cz.pool.ntp.org", 3600, 60000);
 
 /* Proměnné týkající se AsyncWebServeru */
 AsyncWebServer server(80);
+
+/* Proměnná pro Web Socket */
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 
@@ -62,7 +79,7 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     AwsFrameInfo * info = (AwsFrameInfo*)arg;
     String msg = "";
     if(info->final && info->index == 0 && info->len == len){
-      //the whole message is in a single frame and we got all of it's data
+      /* Celá zpráva je v jednom rámci (framu) a dostaneme z ní všechna data */
       Serial.printf("ws[%s][%u] %s-message[%llu]: ", server->url(), client->id(), (info->opcode == WS_TEXT)?"text":"binary", info->len);
 
       if(info->opcode == WS_TEXT){
@@ -83,7 +100,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
       else
         client->binary("I got your binary message");
     } else {
-      //message is comprised of multiple frames or the frame is split into multiple packets
+
+      /* Zpráva se zkládá z více rámců nebo je rámec rozdělen do více paketů */
       if(info->index == 0){
         if(info->num == 0)
           Serial.printf("ws[%s][%u] %s-message start\n", server->url(), client->id(), (info->message_opcode == WS_TEXT)?"text":"binary");
@@ -119,7 +137,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
   }
 }
 
-/* Definování proměnných k připojení na internet a k aplikaci*/
+/* Definování proměnných k připojení na internet a k aplikaci */
+
 /*const char* ssid = "ESPNet";
 const char* password = "";*/
 const char * ssid = "TP-Link_7632";
@@ -142,11 +161,12 @@ void setup(){
     delay(1000);
     WiFi.begin(ssid, password);
   }
+
   /* Funkce, která aktivuje timeClienta z knihovny NTP Client */
   timeClient.begin();
   timeClient.setTimeOffset(3600);
 
-  /* Funkce, která pošle OTA events (údálosti) prohlížeči */
+  /* Funkce, která pošle skrze technologii OTA eventy (údálosti) prohlížeči */
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
   ArduinoOTA.onEnd([]() { events.send("Update End", "ota"); });
   ArduinoOTA.onProgress([](unsigned int progress, unsigned int total) {
@@ -154,6 +174,7 @@ void setup(){
     sprintf(p, "Progress: %u%%\n", (progress/(total/100)));
     events.send(p, "ota");
   });
+
   ArduinoOTA.onError([](ota_error_t error) {
     if(error == OTA_AUTH_ERROR) events.send("Auth Failed", "ota");
     else if(error == OTA_BEGIN_ERROR) events.send("Begin Failed", "ota");
@@ -161,12 +182,13 @@ void setup(){
     else if(error == OTA_RECEIVE_ERROR) events.send("Recieve Failed", "ota");
     else if(error == OTA_END_ERROR) events.send("End Failed", "ota");
   });
+
   ArduinoOTA.setHostname(hostName);
   ArduinoOTA.begin();
 
   MDNS.addService("http","tcp",80);
  
- /* Aktivace souborového systému pro ukládání na ESP čip */
+ /* Aktivace souborového systému (file system -> FS) pro ukládání na ESP čip */
   SPIFFS.begin();
 
 /* Vyvolání funkce ws (WebSocket), která naslouchá na jendotlivé eventy (události) */
@@ -179,13 +201,15 @@ void setup(){
   });
   server.addHandler(&events);
   
-/* Routing v části API*/
+
 #ifdef ESP32
   server.addHandler(new SPIFFSEditor(SPIFFS, http_username,http_password));
 #elif defined(ESP8266)
   server.addHandler(new SPIFFSEditor(http_username,http_password));
 #endif
-   server.on("/post", HTTP_GET, [](AsyncWebServerRequest *request){
+
+/* API část je zapoznámkovaná jelikož používám technologii Web Socket */
+   /*server.on("/post", HTTP_GET, [](AsyncWebServerRequest *request){
         String message;
         request->send(200, "text/plain", String(timeClient.getFormattedTime()));
     });
@@ -201,11 +225,11 @@ void setup(){
 
   server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/plain", String(ESP.getFreeHeap()));
-  });
+  });*/
   
  
 /* Routování, metody POST, GET, PUT, UNKNOW, atd. včetně chyby 404 - stránka nenalezena, WebSocket technologie */
-  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.htm");
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 
   server.onNotFound([](AsyncWebServerRequest *request){
     Serial.printf("NOT_FOUND: ");
@@ -253,6 +277,7 @@ void setup(){
 
     request->send(404);
   });
+
   /* Metoda pro uploadování souboru na server */
   server.onFileUpload([](AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final){
     if(!index)
@@ -261,7 +286,8 @@ void setup(){
     if(final)
       Serial.printf("UploadEnd: %s (%u)\n", filename.c_str(), index+len);
   });
-  /* Metoda pro příjem informací ze stránky index.htm do ESP */
+
+  /* Metoda pro příjem informací ze stránky index.html do ESP */
   server.onRequestBody([](AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total){
     if(!index)
       Serial.printf("BodyStart: %u\n", total);
@@ -272,16 +298,18 @@ void setup(){
   server.begin();
 }
 
-//const char * actualTime = timeClient.getFormattedTime().c_str();
-
 /* Funkce, smyčka, která se neustále opakuje v intervalu 1 sekundy -> delay(1000), tedy 1 000 ms -> 1 sekunda */
 void loop(){
+
   /* Vytvoření proměnné pro data uložená v JSON formátu */
   String jsondata;
+
   /* OTA začne naslouchat */
   ArduinoOTA.handle();
+
   /* Vyčištění klientů pro naslouchání WebSocketu */
   ws.cleanupClients();
+
   /* Pokud se timeClient neupdatuje, tak bude silou updatován */
   while(!timeClient.update()) {
     timeClient.forceUpdate();
@@ -289,16 +317,18 @@ void loop(){
 
   /* Do proměnné formattedDate se uloží formátovaný čas z NTPClienta */
   formattedDate = timeClient.getFormattedTime();
+
   /* Vytažení (extrakce) dat v podobě HH:MM:SS*/
   int splitT = formattedDate.indexOf("T");
   dayStamp = formattedDate.substring(0, splitT);
   timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
 
-  /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.htm */
+  /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.html */
   StaticJsonDocument<200> doc;
   doc["time"] = dayStamp.c_str();
   //serializeJson(doc, jsondata);
   serializeJson(doc, jsondata);
+  
   /* Poslání JSON dat skrze WebSocket */
   events.send(jsondata.c_str());
   doc.clear();
