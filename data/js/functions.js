@@ -76,6 +76,13 @@ function startSocket() {
             ge("input_el").value = "";
         }
     }
+    ge("#slider").onchange = function(e){
+        stb();
+            //ws.send(rgbToObj(e.rgb));
+            ws.send(ge("#slider").rgbToObj(e.rgb));
+            ge("#slider").value = e.rgb;
+            //ws.send(rgbToObj(e.rgb));
+    }        
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -142,6 +149,23 @@ brightness.addEventListener('change', function() {
 
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
+function rgbToObj(rgb) {
+  
+    let colors = ["red", "green", "blue", "alpha"]
+  
+    let colorArr = rgb.slice(
+        rgb.indexOf("(") + 1, 
+        rgb.indexOf(")")
+    ).split(", ");
+  
+    let obj = new Object();
+  
+    colorArr.forEach((k, i) => {
+        obj[colors[i]] = k
+    })
+  
+    return obj;
+}
 
 /* Color-picker řešený pomocí jQuery */
 $(document).ready(function() {
@@ -188,7 +212,25 @@ $(document).ready(function() {
             // e.hsl returns the hsl format color
             // e.rgb returns the rgb format color
             //$("#title").css("color", e.rgb);
-            $("#dtptime").css("color", e.rgb);
+            $("#dtptime").css("color", e.rgb)
+
+            //ws.send(ge(e.rgb));
+            //ge(e.rgb);
+            
+            /*var json_arr = {};
+            json_arr["name1"] = "value1";
+            json_arr["name2"] = "value2";
+            json_arr["name3"] = "value3";
+    
+            var json_string = JSON.stringify(json_arr);*/
+
+            //var json_arr = {};
+            //json_arr["rgb"] = e.rgb;
+            
+            console.log(rgbToObj(e.rgb));
+            //ws.send(rgbToObj(e.rgb));
+            // ge(json_string) = this.json_string;
         }
     })
-});
+})
+;
