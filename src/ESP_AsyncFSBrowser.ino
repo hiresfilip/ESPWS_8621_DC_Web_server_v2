@@ -94,6 +94,23 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         }
       }
       Serial.printf("%s\n",msg.c_str());
+                    int n = msg.length();
+ 
+    // declaring character array
+      char json[n + 1];
+ 
+    // copying the contents of the
+    // string to char array
+      strcpy(json, msg.c_str());
+
+      DynamicJsonDocument doc(1024);
+      deserializeJson(doc, json);
+      //if (doc["barva"]){
+      int red=doc["barva"]["red"];
+      Serial.println("Red");
+      //}
+
+
 
       if(info->opcode == WS_TEXT)
         client->text("I got your text message");
@@ -122,6 +139,7 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         }
       }
       Serial.printf("%s\n",msg.c_str());
+      
 
       if((info->index + len) == info->len){
         Serial.printf("ws[%s][%u] frame[%u] end[%llu]\n", server->url(), client->id(), info->num, info->len);

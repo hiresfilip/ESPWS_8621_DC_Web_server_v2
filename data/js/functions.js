@@ -1,6 +1,6 @@
 /* Funkce pro JavaScript a jQuery */
 
-var ws = null;
+var ws = io();
 
 /* Funkce pro naslouchání z HTML skrze ID */
 function ge(s) {
@@ -34,7 +34,8 @@ function addMessage(m) {
 
 /* Funkce, která se stará o komunikace technologií WebSocket */
 function startSocket() {
-    ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
+    //ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
+    ws = new WebSocket('ws://' + '192.168.10.33' + '/ws', ['arduino']);
     ws.binaryType = "arraybuffer";
 
     /* Když je připojen WebSocket zašle zprávu o připojení */
@@ -76,13 +77,13 @@ function startSocket() {
             ge("input_el").value = "";
         }
     }
-    ge("#slider").onchange = function(e){
+    /*ge("#slider").onchange = function(e){
         stb();
             //ws.send(rgbToObj(e.rgb));
             ws.send(ge("#slider").rgbToObj(e.rgb));
             ge("#slider").value = e.rgb;
             //ws.send(rgbToObj(e.rgb));
-    }        
+    }*/      
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -224,11 +225,11 @@ $(document).ready(function() {
     
             var json_string = JSON.stringify(json_arr);*/
 
-            //var json_arr = {};
-            //json_arr["rgb"] = e.rgb;
-            
-            console.log(rgbToObj(e.rgb));
-            //ws.send(rgbToObj(e.rgb));
+            var json_arr = {};
+            json_arr["barva"] = rgbToObj(e.rgb);
+            var json_string = JSON.stringify(json_arr);
+            console.log(json_string);
+            ws.send(json_string);
             // ge(json_string) = this.json_string;
         }
     })
