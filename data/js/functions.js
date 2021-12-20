@@ -1,6 +1,6 @@
 /* Funkce pro JavaScript a jQuery */
 
-var ws = io();
+var ws = null;
 
 /* Funkce pro naslouchání z HTML skrze ID */
 function ge(s) {
@@ -34,8 +34,7 @@ function addMessage(m) {
 
 /* Funkce, která se stará o komunikace technologií WebSocket */
 function startSocket() {
-    //ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
-    ws = new WebSocket('ws://' + '192.168.10.33' + '/ws', ['arduino']);
+    ws = new WebSocket('ws://' + document.location.host + '/ws', ['arduino']);
     ws.binaryType = "arraybuffer";
 
     /* Když je připojen WebSocket zašle zprávu o připojení */
@@ -77,13 +76,14 @@ function startSocket() {
             ge("input_el").value = "";
         }
     }
-    /*ge("#slider").onchange = function(e){
+
+    /*ge("#slider").onchange = function(e) {
         stb();
-            //ws.send(rgbToObj(e.rgb));
-            ws.send(ge("#slider").rgbToObj(e.rgb));
-            ge("#slider").value = e.rgb;
-            //ws.send(rgbToObj(e.rgb));
-    }*/      
+        //ws.send(rgbToObj(e.rgb));
+        ws.send(ge("#slider").rgbToObj(e.rgb));
+        ge("#slider").value = e.rgb;
+        //ws.send(rgbToObj(e.rgb));
+    }*/
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -149,22 +149,23 @@ brightness.addEventListener('change', function() {
 })
 
 
+
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 function rgbToObj(rgb) {
-  
+
     let colors = ["red", "green", "blue", "alpha"]
-  
+
     let colorArr = rgb.slice(
-        rgb.indexOf("(") + 1, 
+        rgb.indexOf("(") + 1,
         rgb.indexOf(")")
     ).split(", ");
-  
+
     let obj = new Object();
-  
+
     colorArr.forEach((k, i) => {
         obj[colors[i]] = k
     })
-  
+
     return obj;
 }
 
@@ -214,10 +215,9 @@ $(document).ready(function() {
             // e.rgb returns the rgb format color
             //$("#title").css("color", e.rgb);
             $("#dtptime").css("color", e.rgb)
+                //ws.send(ge(e.rgb));
+                //ge(e.rgb);
 
-            //ws.send(ge(e.rgb));
-            //ge(e.rgb);
-            
             /*var json_arr = {};
             json_arr["name1"] = "value1";
             json_arr["name2"] = "value2";
@@ -225,13 +225,19 @@ $(document).ready(function() {
     
             var json_string = JSON.stringify(json_arr);*/
 
-            var json_arr = {};
+            //var json_arr = {};
+            //json_arr["rgb"] = e.rgb;
+
+            console.log(rgbToObj(e.rgb));
+
+            /*var json_arr = {};
             json_arr["barva"] = rgbToObj(e.rgb);
             var json_string = JSON.stringify(json_arr);
             console.log(json_string);
-            ws.send(json_string);
+            ws.send(json_string);*/
+
+            //ws.send(rgbToObj(e.rgb));
             // ge(json_string) = this.json_string;
         }
     })
-})
-;
+});
