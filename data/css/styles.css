@@ -17,10 +17,10 @@ h1 {
     color: white;
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
-    padding: auto;
-    margin: auto;
-    padding-top: 2em;
-    padding-bottom: 2em;
+    /*padding: auto;
+    margin: auto;*/
+    padding-top: 1em;
+    padding-bottom: 1em;
 }
 
 
@@ -72,8 +72,8 @@ h1 {
 /* ID pro aktuální čas z DTP serveru */
 
 #dtptime {
-    /*color: blue;
-    animation: changeColor 5s infinite;*/
+    color: red;
+    /*animation: changeColor 5s infinite;*/
     padding-top: 1em;
     padding-bottom: 0.5em;
     font-size: 50px;
@@ -199,6 +199,7 @@ h1 {
 
 .rs-block .rs-inner {
     padding: 10%;
+    text-align: center;
 }
 
 .color_box {

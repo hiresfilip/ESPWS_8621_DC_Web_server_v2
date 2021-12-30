@@ -1,21 +1,3 @@
-<!--
-  FSWebServer - Example Index Page
-  Copyright (c) 2015 Hristo Gochkov. All rights reserved.
-  This file is part of the ESP8266WebServer library for Arduino environment.
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
--->
-
 <!DOCTYPE html>
 <html lang="cs">
 
@@ -23,22 +5,20 @@
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <title>ESPWS 8621 WS DC</title>
-
     <!-- Odkazy na CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link href="https://cdn.jsdelivr.net/npm/round-slider@1.6.1/dist/roundslider.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="./css/styles.css">
 </head>
 
-<body id="body" onload="onBodyLoad()">
+<body>
+    <h1>WebSocket Digitální Hodiny</h1>
     <pre id="dbg"></pre>
     <div id="input_div">
-        <!--$--><input type="text" value="" id="input_el">
+        <input type="text" value="" id="input_el">
     </div>
     <main>
-
         <!-- Aktuální čas -->
         <div>
             <p id="dtptime"></p>
@@ -47,16 +27,20 @@
         <!-- Odsazení -->
         <div class="indentation"></div>
 
-        <!-- Color-picker -->
-        <div id="slider"></div>
+        <div class="row">
+            <div class="xl-col-3">
+                <!-- Color-picker -->
+                <div id="slider"></div>
 
-        <!-- Odsazení -->
-        <div class="indentation"></div>
+                <!-- Odsazení -->
+                <div class="indentation"></div>
 
-        <!-- Posuvník pro světelnost - jas -->
-        <div class="slidecontainer">
-            <input type="range" min="1" max="100" value="100" class="sliderBrightness" id="brightness">
-            <div id="outputBrightness"></div>
+                <!-- Posuvník pro světelnost - jas -->
+                <div class="slidecontainer">
+                    <input type="range" min="1" max="100" value="100" class="sliderBrightness" id="brightness">
+                    <div id="outputBrightness"></div>
+                </div>
+            </div>
         </div>
     </main>
 

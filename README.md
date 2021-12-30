@@ -22,4 +22,4 @@ DC - zkratka pro "Digital Clock" <br>
 
 # Potřebné součástky
 - ESP8266 nebo ESP32
-- WS2812b
+- LED pásek WS2812b
