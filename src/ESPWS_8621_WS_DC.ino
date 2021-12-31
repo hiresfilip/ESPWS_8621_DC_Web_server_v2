@@ -57,7 +57,7 @@ AsyncWebServer server(80);
 AsyncWebSocket ws("/ws");
 AsyncEventSource events("/events");
 
-/* Proměnné týkající se DTPClientu */
+/* Proměnné týkající se NTPClientu */
 String formattedDate;
 String dayStamp;
 String timeStamp;

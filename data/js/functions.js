@@ -7,8 +7,8 @@ $(document).ready(function() {
     es.onmessage = function(e) {
         /* Do proměnné jsou uložena data z ESP ve formě JSON - konkrétně aktuální čas */
         const obj = JSON.parse(e.data);
-        /* Funkce vypíše čas z DTP klienta do příslušného místa v HTML stránce do ID dtptime */
-        $('#dtptime').empty().append($('<p/>').text(obj.time).html());
+        /* Funkce vypíše čas z NTP klienta do příslušného místa v HTML stránce do ID ntptime */
+        $('#ntptime').empty().append($('<p/>').text(obj.time).html());
     };
 
     /* Jas LED pásku */
@@ -20,8 +20,8 @@ $(document).ready(function() {
         outputBrightness.innerHTML = this.value;
         ws.send(this.value);
         /* Ovládání světelnosti na aktuálním čase a Color-pickeru v HTML stránce */
-        $("#dtptime").css("opacity", (this.value / 100));
-        $("#slider").css("opacity", (this.value / 100));
+        $("#ntptime").css("opacity", (this.value / 100));
+        //$("#slider").css("opacity", (this.value / 100));
         console.log("Alfa: " + this.value);
     })
 
@@ -77,7 +77,7 @@ $(document).ready(function() {
     });
 
     $("#slider").on('colorChange', function(e) {
-        $("#dtptime").css("color", e.rgb);
+        $("#ntptime").css("color", e.rgb);
         let json_string = JSON.stringify(rgbToObj(e.rgb));
         console.log(json_string);
         ws.send(json_string);

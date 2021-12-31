@@ -12,8 +12,8 @@ main {
     background-color: #282828;
 }
 
-h1 {
-    background-color: blue;
+h3 {
+    /*background-color: rgb(0, 182, 112);*/
     color: white;
     text-align: center;
     font-family: Arial, Helvetica, sans-serif;
@@ -69,13 +69,13 @@ h1 {
 }
 
 
-/* ID pro aktuální čas z DTP serveru */
+/* ID pro aktuální čas z NTP serveru */
 
-#dtptime {
+#ntptime {
     color: red;
     /*animation: changeColor 5s infinite;*/
-    padding-top: 1em;
-    padding-bottom: 0.5em;
+    /*padding-top: 1em;
+    padding-bottom: 0.5em;*/
     font-size: 50px;
     text-align: center;
 }
