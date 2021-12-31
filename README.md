@@ -11,13 +11,16 @@ DC - zkratka pro "Digital Clock" <br>
 **Ovládání digitálních hodin přes jakékoliv zařízení s webovým prohlížečem**
 
 # Znalosti nutné k pochopení projektu
-- HTML
+- HTML5
+- Bootstrap4
 - JS (JavaScript)
+- jQuery (JS)
 - CSS (kaskádové styly)
 - C++
 
 # Jaké technologie jsou zde užity?
 - Web Socket - pro přenos dat, informací a paketů
+- OTA - šifrovaná komunikace přes WiFi
 - DTPClient - řeší získávání aktuálního času
 
 # Potřebné součástky
