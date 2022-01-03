@@ -94,49 +94,20 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         }
       }
 
-
-      /*Serial.printf("%s\n",msg.c_str());
-      int alfa;
-    if(msg.c_str() >= "1" && msg.c_str() <= "100"){
-      alfa = atoi(msg.c_str());
-      Serial.println(alfa);
-}*/
-/* ####################################################################################################### */
-      /*Serial.printf("%s\n",msg.c_str());
-                    int n = msg.length();
- 
-    // declaring character array
-      char json[n + 1];
- 
-    // copying the contents of the
-    // string to char array
-      strcpy(json, msg.c_str());
-      
-
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, json);
-      //if (doc["barva"]){
-      int red=doc["barva"]["red"];
-      Serial.println(red);
-      //}*/
-
-      //char json[] = "{\"sensor\":\"gps\",\"time\":1351824120,\"data\":[48.756080,2.302038]}";
-      //StaticJsonDocument<200>doc;
       Serial.printf("%s\n",msg.c_str());
-      int n = msg.length();
-      char json[n + 1];
       DynamicJsonDocument doc(1024);
-      deserializeJson(doc, json);
+      deserializeJson(doc, msg.c_str());
 
       int red = doc["red"];
       int green = doc["green"];
       int blue = doc["blue"];
+      int alfa = doc["alfa"];
 
-      Serial.println(red);
-      Serial.println(green);
-      Serial.println(blue);
+      Serial.printf("RED: %d\n", red);
+      Serial.printf("GREEN: %d\n", green);
+      Serial.printf("BLUE: %d\n", blue);
+      Serial.printf("ALFA: %d\n", alfa);
 
-/* ###################################################################################################### */
 
       if(info->opcode == WS_TEXT)
         client->text("I got your text message");
@@ -182,14 +153,14 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 
 /* Definování proměnných k připojení na internet a k aplikaci */
 
-/*const char* ssid = "ESPNet";
-const char* password = "";*/
-const char * ssid = "TP-Link_7632";
-const char * password = "97261261";
+const char* ssid = "ESPNet";
+const char* password = "";
+/*const char * ssid = "TP-Link_7632";
+const char * password = "97261261";*/
 const char * hostName = "ESPWS_8621_WS_DC";
-const char* http_username = "admin";
-const char* http_password = "admin";
-const char* PARAM_MESSAGE = "message";
+const char * http_username = "admin";
+const char * http_password = "admin";
+const char * PARAM_MESSAGE = "message";
 
 /* Funkce, která nastaví wifi připojení */
 void setup(){
@@ -370,7 +341,6 @@ void loop(){
   /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.html */
   StaticJsonDocument<200> doc;
   doc["time"] = dayStamp.c_str();
-  //serializeJson(doc, jsondata);
   serializeJson(doc, jsondata);
   
   /* Poslání JSON dat skrze WebSocket */

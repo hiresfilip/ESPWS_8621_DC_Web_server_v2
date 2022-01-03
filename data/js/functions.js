@@ -18,7 +18,10 @@ $(document).ready(function() {
     /* Funkce naslouchá posuvníků a zaznamenává jeho hodnoty, které následně zašle skrz Web Socket */
     brightness.addEventListener('change', function() {
         outputBrightness.innerHTML = this.value;
-        ws.send(this.value);
+        let alfa = {"alfa":this.value};
+        alfa = JSON.stringify(alfa);
+        //ws.send(this.value);
+        ws.send(alfa);
         /* Ovládání světelnosti na aktuálním čase a Color-pickeru v HTML stránce */
         $("#ntptime").css("opacity", (this.value / 100));
         //$("#slider").css("opacity", (this.value / 100));
