@@ -62,6 +62,11 @@ String formattedDate;
 String dayStamp;
 String timeStamp;
 
+int red;
+int green;
+int blue;
+int alfa;
+
 /* Funkce, která zaznamenává eventy (události), které ESP dostane od serveru a vypíše do serial monitoru */
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
   if(type == WS_EVT_CONNECT){
@@ -98,10 +103,10 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
       DynamicJsonDocument doc(1024);
       deserializeJson(doc, msg.c_str());
 
-      int red = doc["red"];
-      int green = doc["green"];
-      int blue = doc["blue"];
-      int alfa = doc["alfa"];
+       red = doc["red"];
+       green = doc["green"];
+       blue = doc["blue"];
+       alfa = doc["alfa"];
 
       Serial.printf("RED: %d\n", red);
       Serial.printf("GREEN: %d\n", green);
@@ -314,6 +319,13 @@ void setup(){
 
 /* Funkce, smyčka, která se neustále opakuje v intervalu 1 sekundy -> delay(1000), tedy 1 000 ms -> 1 sekunda */
 void loop(){
+  Serial.println("-------------------- B A R V Y   V   L O O P U --------------------------------");
+  Serial.println(red);
+  Serial.println(green);
+  Serial.println(blue);
+  Serial.println(alfa);
+  Serial.println("-------------------- B A R V Y   V   L O O P U -------------------------------|");
+  Serial.println("");
 
   /* Vytvoření proměnné pro data uložená v JSON formátu */
   String jsondata;
