@@ -40,8 +40,23 @@
 /* Knihovna z jazyka C, umožňuje převést data na jednoduchý řetězec (string), typický pro jazyk C */
 #include <string>
 
-/* knihovna, která se stará o GET a POST pro technologii JSON mezi ESP a stránku index.html */
+/* Knihovna, která se stará o GET a POST pro technologii JSON mezi ESP a stránku index.html */
 #include <ArduinoJson.h>
+
+/* Knihovna, která se stará o LED pásek WS2812B */
+#include <FastLED.h>
+
+#define LED_PIN 4
+#define NUM_LEDS 116
+#define CHIPSET WS2812B
+#define COLOR_ORDER GRB
+
+int r_val = 0;
+int g_val = 255;
+int b_val = 255;
+CRGB leds[NUM_LEDS];
+CRGB color = CRGB(r_val, g_val, b_val);
+int alfa = 200;
 
 /* Určení časové zóny */
 WiFiUDP ntpUDP;
@@ -62,10 +77,6 @@ String formattedDate;
 String dayStamp;
 String timeStamp;
 
-int red;
-int green;
-int blue;
-int alfa;
 
 /* Funkce, která zaznamenává eventy (události), které ESP dostane od serveru a vypíše do serial monitoru */
 void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len){
@@ -99,19 +110,19 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         }
       }
 
-      Serial.printf("%s\n",msg.c_str());
-      DynamicJsonDocument doc(1024);
-      deserializeJson(doc, msg.c_str());
+        Serial.printf("%s\n",msg.c_str());
+        DynamicJsonDocument doc(1024);
+        deserializeJson(doc, msg.c_str());
 
-       red = doc["red"];
-       green = doc["green"];
-       blue = doc["blue"];
-       alfa = doc["alfa"];
+        r_val = doc["red"];
+        g_val = doc["green"];
+        b_val = doc["blue"];
+        alfa = doc["alfa"];
 
-      Serial.printf("RED: %d\n", red);
-      Serial.printf("GREEN: %d\n", green);
-      Serial.printf("BLUE: %d\n", blue);
-      Serial.printf("ALFA: %d\n", alfa);
+        Serial.printf("RED: %d\n", r_val);
+        Serial.printf("GREEN: %d\n", g_val);
+        Serial.printf("BLUE: %d\n", b_val);
+        Serial.printf("ALFA: %d\n", alfa);
 
 
       if(info->opcode == WS_TEXT)
@@ -155,13 +166,12 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
     }
   }
 }
-
 /* Definování proměnných k připojení na internet a k aplikaci */
 
-const char* ssid = "ESPNet";
-const char* password = "";
-/*const char * ssid = "TP-Link_7632";
-const char * password = "97261261";*/
+/*const char* ssid = "ESPNet";
+const char* password = "";*/
+const char * ssid = "TP-Link_7632";
+const char * password = "97261261";
 const char * hostName = "ESPWS_8621_WS_DC";
 const char * http_username = "admin";
 const char * http_password = "admin";
@@ -184,6 +194,10 @@ void setup(){
   /* Funkce, která aktivuje timeClienta z knihovny NTP Client */
   timeClient.begin();
   timeClient.setTimeOffset(3600);
+
+  /* Funkce nadefinuje pásek i se světelností */
+  FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.setBrightness(alfa); /* MAX: 255 */
 
   /* Funkce, která pošle skrze technologii OTA eventy (údálosti) prohlížeči */
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
@@ -317,15 +331,128 @@ void setup(){
   server.begin();
 }
 
+
+/* Jednotky minut */
+int digitMin1[10][28] = {
+{ 4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,-1,-1,-1,-1 },       //0
+{ 12,13,14,15,16,17,18,19,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //1
+{ 0,1,2,3,8,9,10,11,12,13,14,15,20,21,22,23,24,25,26,27,-1,-1,-1,-1,-1,-1,-1,-1 },       //2
+{ 0,1,2,3,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,-1,-1,-1,-1,-1,-1,-1,-1 },       //3
+{ 0,1,2,3,4,5,6,7,12,13,14,15,16,17,18,19,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 },         //4
+{ 0,1,2,3,4,5,6,7,8,9,10,11,16,17,18,19,20,21,22,23,-1,-1,-1,-1,-1,-1,-1,-1 },           //5
+{ 0,1,2,3,4,5,6,7,8,9,10,11,16,17,18,19,20,21,22,23,24,25,26,27,-1,-1,-1,-1 },           //6
+{ 8,9,10,11,12,13,14,15,16,17,18,19,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 },   //7
+{ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27 },           //8
+{ 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,-1,-1,-1,-1 }            //9
+};
+
+/* Desítky minut */
+int digitMin2[10][28] = {
+{ 28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,-1,-1,-1,-1 }, //0
+{ 28,29,30,31,48,49,50,51,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //1
+{ 32,33,34,35,36,37,38,39,44,45,46,47,48,49,50,51,52,53,54,55,-1,-1,-1,-1,-1,-1,-1,-1 }, //2
+{ 28,29,30,31,32,33,34,35,44,45,46,47,48,49,50,51,52,53,54,55,-1,-1,-1,-1,-1,-1,-1,-1 }, //3
+{ 28,29,30,31,40,41,42,43,48,49,50,51,52,53,54,55,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //4
+{ 28,29,30,31,32,33,34,35,40,41,42,43,44,45,46,47,52,53,54,55,-1,-1,-1,-1,-1,-1,-1,-1 }, //5
+{ 28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,52,53,54,55,-1,-1,-1,-1 }, //6
+{ 28,29,30,31,44,45,46,47,48,49,50,51,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //7
+{ 28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55 }, //8
+{ 28,29,30,31,32,33,34,35,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,-1,-1,-1,-1 }  //9
+};
+
+/* Jednotky hodin */
+int digitHod1[10][28] = {
+{ 64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,-1,-1,-1,-1 }, //0
+{ 72,73,74,75,76,77,78,79,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //1
+{ 60,61,62,63,68,69,70,71,72,73,74,75,80,81,82,83,84,85,86,87,-1,-1,-1,-1,-1,-1,-1,-1 }, //2
+{ 60,61,62,63,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,-1,-1,-1,-1,-1,-1,-1,-1 }, //3
+{ 60,61,62,63,64,65,66,67,72,73,74,75,76,77,78,79,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //4
+{ 60,61,62,63,64,65,66,67,68,69,70,71,76,77,78,79,80,81,82,83,-1,-1,-1,-1,-1,-1,-1,-1 }, //5
+{ 60,61,62,63,64,65,66,67,68,69,70,71,76,77,78,79,80,81,82,83,84,85,86,87,-1,-1,-1,-1 }, //6
+{ 68,69,70,71,72,73,74,75,76,77,78,79,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 }, //7
+{ 60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87 }, //8
+{ 60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,-1,-1,-1,-1 }  //9
+};
+
+/* Desítky hodin */
+int digitHod2[10][28] = {
+{ 88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,-1,-1,-1,-1 },      //0
+{ 88,89,90,91,108,109,110,111,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 },              //1
+{ 92,93,94,95,96,97,98,99,104,105,106,107,108,109,110,111,112,113,114,115,-1,-1,-1,-1,-1,-1,-1,-1 },      //2
+{ 88,89,90,91,92,93,94,95,104,105,106,107,108,109,110,111,112,113,114,115,-1,-1,-1,-1,-1,-1,-1,-1 },      //3
+{ 88,89,90,91,100,101,102,103,108,109,110,111,112,113,114,115,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 },      //4
+{ 88,89,90,91,92,93,94,95,100,101,102,103,104,105,106,107,112,113,114,115,-1,-1,-1,-1,-1,-1,-1,-1 },      //5
+{ 88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,112,113,114,115,-1,-1,-1,-1 },      //6
+{ 88,89,90,91,104,105,106,107,108,109,110,111,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 },          //7
+{ 88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115 },  //8
+{ 88,89,90,91,92,93,94,95,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,-1,-1,-1,-1 }   //9
+};
+
+/* Jednotky minuty */
+void displayMin1(int cislo){
+  for(int i = 0; i < 28; i++){
+    leds[digitMin1[cislo][i]] = color;
+  }
+  FastLED.show();
+}
+
+/* Desítky minut */
+void displayMin2(int cislo){
+  for(int i = 0; i < 28; i++){
+    leds[digitMin2[cislo][i]] = color;
+  }
+  FastLED.show();
+}
+
+/* Dvojtečka */
+void dvojteckaON(){
+  for(int z = 56; z <= 59; z++){
+    leds[z] = color;
+  }
+  FastLED.show();
+}
+
+void dvojteckaOFF(){
+  for(int z = 56; z <= 59; z++){
+    leds[z] = CRGB::Black;
+  }
+  FastLED.show();
+}
+
+/* Jednotky hodin */
+void displayHod1(int cislo){
+  for(int i = 0; i < 28; i++){
+    leds[digitHod1[cislo][i]] = color;
+  }
+  FastLED.show();
+}
+
+/* Desítky hodin */
+void displayHod2(int cislo){
+  for(int i = 0; i < 28; i++){
+    leds[digitHod2[cislo][i]] = color;
+  }
+  FastLED.show();
+}
+
+/* Vymazání celého displeje */
+  void displayBlack(){
+    for(int i = 0; i < NUM_LEDS; i++){
+      leds[i] = CRGB::Black;
+    }
+    FastLED.show();
+  }
+
+/* Funkce pro zobrazení času přes LED pásek WS2812B */
+void displayTime(int h, int m){
+  displayMin1(m % 10);
+  displayMin2(m / 10);
+  displayHod1(h % 10);
+  displayHod2(h / 10);
+}
+
 /* Funkce, smyčka, která se neustále opakuje v intervalu 1 sekundy -> delay(1000), tedy 1 000 ms -> 1 sekunda */
 void loop(){
-  Serial.println("-------------------- B A R V Y   V   L O O P U --------------------------------");
-  Serial.println(red);
-  Serial.println(green);
-  Serial.println(blue);
-  Serial.println(alfa);
-  Serial.println("-------------------- B A R V Y   V   L O O P U -------------------------------|");
-  Serial.println("");
 
   /* Vytvoření proměnné pro data uložená v JSON formátu */
   String jsondata;
@@ -340,6 +467,22 @@ void loop(){
   while(!timeClient.update()) {
     timeClient.forceUpdate();
   }
+
+  /* Deklarace proměnných, do kterých je uložen čas z NTP Clienta */
+  int h = timeClient.getHours();
+  int m = timeClient.getMinutes();
+
+  dvojteckaON();
+  /* Když NTP Client pošle další hodinu či minutu, vymaže se display a zobrazí se správný čas */
+  if(m + 1 || h + 1){
+    displayBlack();
+    displayTime(h,m);
+    //dvojteckaOFF();
+    //delay(1000);
+    //dvojteckaOFF();
+  }
+  dvojteckaOFF();
+  //delay(1000);
 
   /* Do proměnné formattedDate se uloží formátovaný čas z NTPClienta */
   formattedDate = timeClient.getFormattedTime();
