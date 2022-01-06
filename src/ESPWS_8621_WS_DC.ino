@@ -51,12 +51,9 @@
 #define CHIPSET WS2812B
 #define COLOR_ORDER GRB
 
-int r_val = 0;
-int g_val = 255;
-int b_val = 255;
 CRGB leds[NUM_LEDS];
-CRGB color = CRGB(r_val, g_val, b_val);
-int alfa = 200;
+CRGB color;
+int brightness;
 
 /* Určení časové zóny */
 WiFiUDP ntpUDP;
@@ -114,10 +111,13 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         DynamicJsonDocument doc(1024);
         deserializeJson(doc, msg.c_str());
 
-        r_val = doc["red"];
-        g_val = doc["green"];
-        b_val = doc["blue"];
-        alfa = doc["alfa"];
+        int r_val = doc["red"];
+        int g_val = doc["green"];
+        int b_val = doc["blue"];
+        int alfa = doc["alfa"];
+
+        color = CRGB(r_val,g_val,b_val);
+        brightness = alfa;
 
         Serial.printf("RED: %d\n", r_val);
         Serial.printf("GREEN: %d\n", g_val);
@@ -172,6 +172,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 const char* password = "";*/
 const char * ssid = "TP-Link_7632";
 const char * password = "97261261";
+/*const char * ssid = "www.computerparts.cz";
+const char * password = "algoritmus";*/
 const char * hostName = "ESPWS_8621_WS_DC";
 const char * http_username = "admin";
 const char * http_password = "admin";
@@ -180,6 +182,9 @@ const char * PARAM_MESSAGE = "message";
 /* Funkce, která nastaví wifi připojení */
 void setup(){
   Serial.begin(115200);
+  color = CRGB(255,0,0);
+  brightness = 200;
+  FastLED.setBrightness(brightness);
   Serial.setDebugOutput(true);
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(hostName);
@@ -197,7 +202,7 @@ void setup(){
 
   /* Funkce nadefinuje pásek i se světelností */
   FastLED.addLeds<CHIPSET, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS);
-  FastLED.setBrightness(alfa); /* MAX: 255 */
+  //FastLED.setBrightness(alfa); /* MAX: 255 */
 
   /* Funkce, která pošle skrze technologii OTA eventy (údálosti) prohlížeči */
   ArduinoOTA.onStart([]() { events.send("Update Start", "ota"); });
@@ -393,7 +398,6 @@ void displayMin1(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitMin1[cislo][i]] = color;
   }
-  FastLED.show();
 }
 
 /* Desítky minut */
@@ -401,7 +405,6 @@ void displayMin2(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitMin2[cislo][i]] = color;
   }
-  FastLED.show();
 }
 
 /* Dvojtečka */
@@ -409,14 +412,12 @@ void dvojteckaON(){
   for(int z = 56; z <= 59; z++){
     leds[z] = color;
   }
-  FastLED.show();
 }
 
 void dvojteckaOFF(){
   for(int z = 56; z <= 59; z++){
     leds[z] = CRGB::Black;
   }
-  FastLED.show();
 }
 
 /* Jednotky hodin */
@@ -424,7 +425,6 @@ void displayHod1(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitHod1[cislo][i]] = color;
   }
-  FastLED.show();
 }
 
 /* Desítky hodin */
@@ -432,7 +432,6 @@ void displayHod2(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitHod2[cislo][i]] = color;
   }
-  FastLED.show();
 }
 
 /* Vymazání celého displeje */
@@ -440,7 +439,7 @@ void displayHod2(int cislo){
     for(int i = 0; i < NUM_LEDS; i++){
       leds[i] = CRGB::Black;
     }
-    FastLED.show();
+
   }
 
 /* Funkce pro zobrazení času přes LED pásek WS2812B */
@@ -468,22 +467,6 @@ void loop(){
     timeClient.forceUpdate();
   }
 
-  /* Deklarace proměnných, do kterých je uložen čas z NTP Clienta */
-  int h = timeClient.getHours();
-  int m = timeClient.getMinutes();
-
-  dvojteckaON();
-  /* Když NTP Client pošle další hodinu či minutu, vymaže se display a zobrazí se správný čas */
-  if(m + 1 || h + 1){
-    displayBlack();
-    displayTime(h,m);
-    //dvojteckaOFF();
-    //delay(1000);
-    //dvojteckaOFF();
-  }
-  dvojteckaOFF();
-  //delay(1000);
-
   /* Do proměnné formattedDate se uloží formátovaný čas z NTPClienta */
   formattedDate = timeClient.getFormattedTime();
   /*Serial.printf("%s\n", formattedDate);*/
@@ -493,6 +476,23 @@ void loop(){
   dayStamp = formattedDate.substring(0, splitT);
   timeStamp = formattedDate.substring(splitT+1, formattedDate.length()-1);
 
+    /* Deklarace proměnných, do kterých je uložen čas z NTP Clienta */
+  int h = timeClient.getHours();
+  int m = timeClient.getMinutes();
+
+  //dvojteckaON();
+  //  dvojteckaON();
+    unsigned long currentMillis = millis();
+    unsigned long previousMillis = 0;
+    if (currentMillis - previousMillis >= 1000) {
+      // save the last time you blinked the LED
+    previousMillis = currentMillis;
+      displayBlack();
+      displayTime(h,m);
+      dvojteckaON();
+    } 
+  FastLED.show();
+
   /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.html */
   StaticJsonDocument<200> doc;
   doc["time"] = dayStamp.c_str();
@@ -501,6 +501,4 @@ void loop(){
   /* Poslání JSON dat skrze WebSocket */
   events.send(jsondata.c_str());
   doc.clear();
-
-  delay(1000);
 }
