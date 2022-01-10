@@ -51,9 +51,16 @@
 #define CHIPSET WS2812B
 #define COLOR_ORDER GRB
 
+int r_val;
+int g_val;
+int b_val;
 CRGB leds[NUM_LEDS];
+//CRGB color = CRGB(r_val, g_val, b_val);
 CRGB color;
-int brightness;
+int alfa;
+
+unsigned long currentMillis = millis();
+unsigned long previousMillis = 0;
 
 /* Určení časové zóny */
 WiFiUDP ntpUDP;
@@ -110,14 +117,25 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
         Serial.printf("%s\n",msg.c_str());
         DynamicJsonDocument doc(1024);
         deserializeJson(doc, msg.c_str());
-
-        int r_val = doc["red"];
-        int g_val = doc["green"];
-        int b_val = doc["blue"];
-        int alfa = doc["alfa"];
-
-        color = CRGB(r_val,g_val,b_val);
-        brightness = alfa;
+          
+          if(doc["alfa"]){
+            alfa = doc["alfa"];
+            r_val;
+            g_val;
+            b_val;
+            color = CRGB(r_val,g_val,b_val);
+            FastLED.setBrightness(alfa);
+          }
+          if(doc["red"] && doc["green"] && doc["blue"]){
+            alfa;
+            r_val = doc["red"];
+            g_val = doc["green"];
+            b_val = doc["blue"];
+            color = CRGB(r_val,g_val,b_val);
+            FastLED.setBrightness(alfa);
+          }
+          //color = CRGB(r_val,g_val,b_val);
+          //FastLED.setBrightness(alfa);
 
         Serial.printf("RED: %d\n", r_val);
         Serial.printf("GREEN: %d\n", g_val);
@@ -168,8 +186,8 @@ void onWsEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventT
 }
 /* Definování proměnných k připojení na internet a k aplikaci */
 
-/*const char* ssid = "ESPNet";
-const char* password = "";*/
+/*const char * ssid = "ESPNet";
+const char * password = "";*/
 const char * ssid = "TP-Link_7632";
 const char * password = "97261261";
 /*const char * ssid = "www.computerparts.cz";
@@ -183,8 +201,8 @@ const char * PARAM_MESSAGE = "message";
 void setup(){
   Serial.begin(115200);
   color = CRGB(255,0,0);
-  brightness = 200;
-  FastLED.setBrightness(brightness);
+  FastLED.setBrightness(200);
+  currentMillis = millis();
   Serial.setDebugOutput(true);
   WiFi.mode(WIFI_AP_STA);
   WiFi.softAP(hostName);
@@ -397,6 +415,7 @@ int digitHod2[10][28] = {
 void displayMin1(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitMin1[cislo][i]] = color;
+    FastLED.setBrightness(alfa);
   }
 }
 
@@ -404,6 +423,7 @@ void displayMin1(int cislo){
 void displayMin2(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitMin2[cislo][i]] = color;
+    FastLED.setBrightness(alfa);
   }
 }
 
@@ -411,6 +431,7 @@ void displayMin2(int cislo){
 void dvojteckaON(){
   for(int z = 56; z <= 59; z++){
     leds[z] = color;
+    FastLED.setBrightness(alfa);
   }
 }
 
@@ -424,6 +445,7 @@ void dvojteckaOFF(){
 void displayHod1(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitHod1[cislo][i]] = color;
+    FastLED.setBrightness(alfa);
   }
 }
 
@@ -431,6 +453,7 @@ void displayHod1(int cislo){
 void displayHod2(int cislo){
   for(int i = 0; i < 28; i++){
     leds[digitHod2[cislo][i]] = color;
+    FastLED.setBrightness(alfa);
   }
 }
 
@@ -482,23 +505,22 @@ void loop(){
 
   //dvojteckaON();
   //  dvojteckaON();
-    unsigned long currentMillis = millis();
-    unsigned long previousMillis = 0;
-    if (currentMillis - previousMillis >= 1000) {
+
+    if (millis() - previousMillis >= 1000) {
       // save the last time you blinked the LED
-    previousMillis = currentMillis;
+      previousMillis = millis();
       displayBlack();
       displayTime(h,m);
       dvojteckaON();
+
+      /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.html */
+      StaticJsonDocument<200> doc;
+      doc["time"] = dayStamp.c_str();
+      serializeJson(doc, jsondata);
+      //Serial.println(jsondata);
+     /* Poslání JSON dat skrze WebSocket */
+      events.send(jsondata.c_str());
+      doc.clear();
     } 
   FastLED.show();
-
-  /* Statický dokument v JSONu, slouží ESP pro příjem času a uploadování tohoto času na stránku index.html */
-  StaticJsonDocument<200> doc;
-  doc["time"] = dayStamp.c_str();
-  serializeJson(doc, jsondata);
-  
-  /* Poslání JSON dat skrze WebSocket */
-  events.send(jsondata.c_str());
-  doc.clear();
 }
